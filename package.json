@@ -1,0 +1,31 @@
+{
+  "name": "sequelize-permissions",
+  "version": "0.0.1",
+  "description": "`sequelize-permissions` adds permissions to your models. If your models use `sequalize-hierarchy`, you can set how their permissions inherit.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dallasread/sequelize-permissions.git"
+  },
+  "keywords": [
+    "permissions",
+    "sequelize"
+  ],
+  "author": "Dallas Read",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dallasread/sequelize-permissions/issues"
+  },
+  "homepage": "https://github.com/dallasread/sequelize-permissions#readme",
+  "devDependencies": {
+    "factory-girl-sequelize": "^1.0.0",
+    "should": "^8.0.2",
+    "sqlite3": "^3.1.1"
+  },
+  "dependencies": {
+    "sequelize": "^3.15.0"
+  }
+}
