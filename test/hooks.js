@@ -1,7 +1,6 @@
 require('should');
 
 var S = require('.'),
-    // _ = require('factory-girl-sequelize')(),
     User, Project;
 
 describe('Hooks', function () {
@@ -10,10 +9,6 @@ describe('Hooks', function () {
         Project = S.define('projects', {});
 
         Project.hasPermissionsFor(User, {
-            // via: ProjectPerm, // What is my permissions model?
-            // ancestors: [App.Models.Org, App.Models.Project], // Who can I inherit my permissions from?
-            // heirs: [App.Models.Project, App.Models.Task, App.Models.Activity], // Who & What should change when I change?
-            // parentField: 'parent_id', // should just be pulled from hierarchy
             defaultPermissionLevel: 0,
             permissionLevels: {
                 0: 'none',
@@ -43,7 +38,4 @@ describe('Hooks', function () {
         (!!perm.hasHook('afterUpdate')).should.eql(true);
         (!!perm.hasHook('afterDestroy')).should.eql(true);
     });
-
-    it('HIERARCHY');
-
 });

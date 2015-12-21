@@ -29,10 +29,16 @@ describe('PermittedTo', function () {
     it('ProjectsUsersPerm.permittedTo(\'view\')', function (done) {
         User.create({}).then(function (user) {
             Project.create({}).then(function (project) {
-                project.permit(user, 'none').then(function (projectPerm) {
+                S.models['projects-users-perms'].create({
+                    projectId: project.id,
+                    userId: user.id,
+                    permissionLevel: 0
+                }).then(function (projectPerm) {
                     projectPerm.permittedTo('view').should.eql(false);
 
-                    project.permit(user, 'view').then(function (projectPerm) {
+                    projectPerm.update({
+                        permissionLevel: 20
+                    }).then(function (projectPerm) {
                         projectPerm.permittedTo('view').should.eql(true);
                         done();
                     });
@@ -44,11 +50,17 @@ describe('PermittedTo', function () {
     it('User.permittedTo(\'view\', project)', function (done) {
         User.create({}).then(function (user) {
             Project.create({}).then(function (project) {
-                project.permit(user, 'none').then(function (projectPerm) {
+                S.models['projects-users-perms'].create({
+                    projectId: project.id,
+                    userId: user.id,
+                    permissionLevel: 0
+                }).then(function (projectPerm) {
                     user.permittedTo('view', project).then(function (permitted) {
                         permitted.should.eql(false);
 
-                        project.permit(user, 'view').then(function () {
+                        projectPerm.update({
+                            permissionLevel: 20
+                        }).then(function () {
                             user.permittedTo('view', project, function (permitted) {
                                 permitted.should.eql(true);
 
@@ -68,11 +80,17 @@ describe('PermittedTo', function () {
     it('Project.permittedTo(\'view\', user)', function (done) {
         User.create({}).then(function (user) {
             Project.create({}).then(function (project) {
-                project.permit(user, 'none').then(function (projectPerm) {
+                S.models['projects-users-perms'].create({
+                    projectId: project.id,
+                    userId: user.id,
+                    permissionLevel: 0
+                }).then(function (projectPerm) {
                     project.permittedTo('view', user, function (permitted) {
                         permitted.should.eql(false);
 
-                        project.permit(user, 'view').then(function () {
+                        projectPerm.update({
+                            permissionLevel: 30
+                        }).then(function () {
                             project.permittedTo('view', user).then(function (permitted) {
                                 permitted.should.eql(true);
 

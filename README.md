@@ -18,15 +18,19 @@ Project.hasPermissionsFor(User, {
     }
 });
 
- => set up BubbleDownModel on Project
- => set up BubbleDownPerms on ProjectPerm
- => add `ProjectPerm.permittedTo('view');`
- => add `User.permittedTo('view', project);`
- => add `Project.permittedTo('view', user);`
- => add `User.findPermitted(Project, 'view');`
- => add `User.findPermitted(Project, {});`
- => add `User.findPermitted(User, 'view');`
- => add `Project.findPermitted(User, {});`
+ => ProjectPerm.permittedTo('view');
+ => User.permittedTo('view', project);
+ => Project.permittedTo('view', user);
+ => User.findPermitted(Project, 'view' || {});
+ => Project.findPermitted(User, 'view' || {});
+
+ => Project.permit(User, 'view');
+ => Project.unpermit(User);
+ => User.permit(Project, 'view');
+ => User.unpermit(Project);
+
+ => set up BubbleInheritanceDownModel on Project
+ => set up BubbleInheritanceDownPerms on ProjectPerm
 ```
 
 - Whenever a changerPerm (eg. OrgPerm) changes, update the User's inherited affectedPerms (eg. ProjectPerms, TaskPerms)
