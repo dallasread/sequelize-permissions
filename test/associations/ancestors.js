@@ -23,9 +23,7 @@ var S = require('../'),
 //             }
 //         });
 
-        // S.sync({ force: true }).then(function () {
-        //     done();
-        // });
+        // S.resetTestDB(done);
 //     });
 
 //     it('inherit from parent');

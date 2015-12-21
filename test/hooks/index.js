@@ -23,15 +23,15 @@ describe('Hooks', function () {
             }
         });
 
-        S.sync({ force: true }).then(function () {
-            done();
-        });
+        S.resetTestDB(done);
     });
 
     it('creates hooks and associations on model', function () {
         (!!Project.hasHook('afterCreate')).should.eql(true);
         (!!Project.hasHook('afterUpdate')).should.eql(true);
         (!!Project.hasHook('afterDestroy')).should.eql(true);
+
+        (!!User.hasHook('afterDestroy')).should.eql(true);
 
         Project.associations.should.have.propertyByPath('users');
         Project.associations.should.have.propertyByPath('projects-users-perms');

@@ -21,9 +21,7 @@ describe('FindPermitted', function () {
             }
         });
 
-        S.sync({ force: true }).then(function () {
-            done();
-        });
+        S.resetTestDB(done);
     });
 
     it('User.findPermitted(Project, \'view\')', function (done) {

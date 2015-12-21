@@ -27,9 +27,7 @@ describe('Inheritable Parent', function () {
 
         Task.belongsTo(Project);
 
-        S.sync({ force: true }).then(function () {
-            done();
-        });
+        S.resetTestDB(done);
     });
 
     it('manages child perm when parent model is created or deleted', function(done) {

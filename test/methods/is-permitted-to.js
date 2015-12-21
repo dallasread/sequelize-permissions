@@ -21,9 +21,7 @@ describe('isPermittedTo', function () {
             }
         });
 
-        S.sync({ force: true }).then(function () {
-            done();
-        });
+        S.resetTestDB(done);
     });
 
     it('ProjectsUsersPerm.isPermittedTo(\'view\')', function (done) {
