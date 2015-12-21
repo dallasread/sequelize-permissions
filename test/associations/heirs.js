@@ -1,16 +1,13 @@
 require('should');
 
 var S = require('../'),
-    // _ = require('factory-girl-sequelize')(),
     User, Project, Task, Org;
 
-require('sequelize-hierarchy')(S.Sequelize);
-
-describe('Inheritable Parents', function () {
-    before(function () {
+describe('Inheritable Parent', function () {
+    before(function (done) {
         Org = S.define('orgs', {});
         User = S.define('users', {});
-        Project = S.define('projects', {});
+        Project = S.define('projects', {}, { hierarchy: true });
         Task = S.define('tasks', {}, { hierarchy: true });
 
         Project.hasPermissionsFor(User, {
@@ -26,9 +23,13 @@ describe('Inheritable Parents', function () {
                 60: 'admin'
             }
         });
+
+        S.sync({ force: true }).then(function () {
+            done();
+        });
     });
 
-    it('manage child perm when child model changes', function(done) {
+    it('manages child perm when child model is created or updated', function(done) {
         User.create({}).then(function (user) {
             Project.create().then(function (project) {
                 project.permit(user, 'view', function () {

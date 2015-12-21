@@ -20,6 +20,10 @@ describe('Hooks', function () {
                 60: 'admin'
             }
         });
+
+        S.sync({ force: true }).then(function () {
+            done();
+        });
     });
 
     it('creates hooks and associations on model', function () {

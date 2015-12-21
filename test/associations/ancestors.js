@@ -22,6 +22,10 @@ var S = require('../'),
 //                 60: 'admin'
 //             }
 //         });
+
+        // S.sync({ force: true }).then(function () {
+        //     done();
+        // });
 //     });
 
 //     it('inherit from parent');
