@@ -51,8 +51,6 @@ describe('FindPermitted', function () {
                                     done();
                                 });
                             });
-
-                            done();
                         });
                     });
                 });

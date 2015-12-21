@@ -29,7 +29,7 @@ describe('Inheritable Parent', function () {
         });
     });
 
-    it('manages child perm when child model is created or updated', function(done) {
+    it('manages child perm when child model is created, updated, or deleted', function(done) {
         User.create({}).then(function (user) {
             Project.create().then(function (project) {
                 project.permit(user, 'view', function () {
@@ -44,7 +44,15 @@ describe('Inheritable Parent', function () {
                                 user.permittedTo('view', subProject).then(function(permitted) {
                                     permitted.should.eql(false);
 
-                                    done();
+                                    subProject.update({ inheritPerms: 1 }).then(function() { // <=
+                                        subProject.destroy().then(function() {
+                                            user.permittedTo('view', subProject).then(function(permitted) {
+                                                permitted.should.eql(false);
+
+                                                done();
+                                            });
+                                        });
+                                    });
                                 });
                             });
                         });
@@ -54,24 +62,42 @@ describe('Inheritable Parent', function () {
         });
     });
 
-    // it('manages child perm when parent perm changes', function(done) {
-    //     User.create({}).then(function (user) {
-    //         Project.create().then(function (project) {
-    //             Project.create({
-    //                 inheritPerms: 1,
-    //                 parentId: project.id
-    //             }).then(function (subProject) {
-    //                 S.models['projects-users-perms'].create({
-    //                     projectId: project.id,
-    //                     userId: user.id,
-    //                     permissionLevel: 10
-    //                 }).then(function (projectPerm) {
+    it('manages child perm when parent perm is created, updated, or deleted', function(done) {
+        User.create({}).then(function (user) {
+            Project.create().then(function (project) {
+                Project.create({
+                    inheritPerms: 1,
+                    parentId: project.id
+                }).then(function (subProject) {
+                    user.permit('admin', project, function () {
+                        user.permittedTo('admin', subProject).then(function(permitted) { // <=
+                            permitted.should.be.eql(true);
 
-    //                 });
-    //             });
-    //         });
-    //     });
-    // });
+                            user.permit('view', project, function () {
+                                user.permittedTo('admin', subProject).then(function(permitted) {
+                                    permitted.should.be.eql(false);
+
+                                    user.permit('admin', project, function () {
+                                        user.permittedTo('admin', subProject).then(function(permitted) {
+                                            permitted.should.be.eql(true);
+
+                                            user.unpermit('admin', project, function () {
+                                                user.permittedTo('view', subProject).then(function(permitted) {
+                                                    permitted.should.be.eql(false);
+
+                                                    done();
+                                                });
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
 
     // it('updates child perms when child\'s inheritPerms changes', function(done) {
     //     User.create({}).then(function (user) {
@@ -93,7 +119,6 @@ describe('Inheritable Parent', function () {
     // });
 
     it('updates its different-model heirs when model changes');
-
     it('updates its heirs when perm changes');
     it('updates its different-model heirs when perm changes');
 });
