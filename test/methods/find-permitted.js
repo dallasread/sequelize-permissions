@@ -33,22 +33,20 @@ describe('FindPermitted', function () {
             }).then(function (projects) {
                 projects.length.should.eql(0);
 
-                Project.create({}).then(function (project) {
-                    S.models['projects-users-perms'].create({
-                        projectId: project.id,
-                        userId: user.id,
-                        permissionLevel: 0
-                    }).then(function (projectPerm) {
-                        user.findPermitted(Project, 'view').then(function (projects) {
-                            projects.length.should.eql(0);
+                Project.create().then(function (project) {
+                    user.findPermitted(Project, 'view').then(function (projects) {
+                        projects.length.should.eql(0);
 
-                            projectPerm.update({
-                                permissionLevel: 20
-                            }).then(function () {
-                                user.findPermitted(Project, 'view').then(function (projects) {
-                                    projects.length.should.eql(1);
+                        project.permit(user, 0).then(function () {
+                            user.findPermitted(Project, 'view').then(function (projects) {
+                                projects.length.should.eql(0);
 
-                                    done();
+                                project.permit(user, 20).then(function () {
+                                    user.findPermitted(Project, 'view').then(function (projects) {
+                                        projects.length.should.eql(1);
+
+                                        done();
+                                    });
                                 });
                             });
                         });

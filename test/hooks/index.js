@@ -4,11 +4,13 @@ var S = require('../'),
     User, Project;
 
 describe('Hooks', function () {
-    before(function () {
+    before(function (done) {
         User = S.define('users', {});
         Project = S.define('projects', {});
 
         Project.hasPermissionsFor(User, {
+            ancestors: [Project],
+            heirs: [Project],
             defaultPermissionLevel: 0,
             permissionLevels: {
                 0: 'none',

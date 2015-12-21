@@ -3,7 +3,7 @@ require('should');
 var S = require('../'),
     User, Project;
 
-describe('PermittedTo', function () {
+describe('isPermittedTo', function () {
     before(function (done) {
         User = S.define('users', {});
         Project = S.define('projects', {});
@@ -26,17 +26,17 @@ describe('PermittedTo', function () {
         });
     });
 
-    it('ProjectsUsersPerm.permittedTo(\'view\')', function (done) {
+    it('ProjectsUsersPerm.isPermittedTo(\'view\')', function (done) {
         User.create({}).then(function (user) {
             Project.create({}).then(function (project) {
                 project.permit('none', user).then(function (projectPerm) {
-                    projectPerm.permittedTo('view').should.eql(false);
+                    projectPerm.isPermittedTo('view').should.eql(false);
 
                     project.permit(user, 'view').then(function (projectPerm) {
-                        projectPerm.permittedTo('view').should.eql(true);
+                        projectPerm.isPermittedTo('view').should.eql(true);
 
                         project.unpermit(user).then(function () {
-                            user.permittedTo('view', project).then(function(permitted) {
+                            user.isPermittedTo('view', project).then(function(permitted) {
                                 permitted.should.eql(false);
 
                                 done();
@@ -48,18 +48,18 @@ describe('PermittedTo', function () {
         });
     });
 
-    it('User.permittedTo(\'view\', project)', function (done) {
+    it('User.isPermittedTo(\'view\', project)', function (done) {
         User.create({}).then(function (user) {
             Project.create({}).then(function (project) {
                 project.permit(user, 'none').then(function () {
-                    user.permittedTo('view', project).then(function (permitted) {
+                    user.isPermittedTo('view', project).then(function (permitted) {
                         permitted.should.eql(false);
 
                         project.permit(user, 'view').then(function () {
-                            user.permittedTo('view', project, function (permitted) {
+                            user.isPermittedTo('view', project, function (permitted) {
                                 permitted.should.eql(true);
 
-                                user.permittedTo('admin', project).then(function (permitted) {
+                                user.isPermittedTo('admin', project).then(function (permitted) {
                                     permitted.should.eql(false);
 
                                     done();
@@ -72,18 +72,18 @@ describe('PermittedTo', function () {
         });
     });
 
-    it('Project.permittedTo(\'view\', user)', function (done) {
+    it('Project.isPermittedTo(\'view\', user)', function (done) {
         User.create({}).then(function (user) {
             Project.create({}).then(function (project) {
                 project.permit(user, 'none').then(function () {
-                    project.permittedTo('view', user, function (permitted) {
+                    project.isPermittedTo('view', user, function (permitted) {
                         permitted.should.eql(false);
 
                         project.permit(user, 'view').then(function () {
-                            project.permittedTo('view', user).then(function (permitted) {
+                            project.isPermittedTo('view', user).then(function (permitted) {
                                 permitted.should.eql(true);
 
-                                project.permittedTo('admin', user).then(function (permitted) {
+                                project.isPermittedTo('admin', user).then(function (permitted) {
                                     permitted.should.eql(false);
 
                                     done();
