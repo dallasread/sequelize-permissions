@@ -4,7 +4,7 @@
   "description": "`sequelize-permissions` adds permissions to your models. If your models use `sequalize-hierarchy`, you can set how their permissions inherit.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --recursive"
   },
   "repository": {
     "type": "git",

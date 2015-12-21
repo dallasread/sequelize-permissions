@@ -18,7 +18,7 @@ Project.hasPermissionsFor(User, {
     }
 });
 
- => ProjectPerm.permittedTo('view');
+ => ProjectsUsersPerm.permittedTo('view');
  => User.permittedTo('view', project);
  => Project.permittedTo('view', user);
  => User.findPermitted(Project, 'view' || {});

@@ -1,6 +1,6 @@
 require('should');
 
-var S = require('.'),
+var S = require('../'),
     User, Project;
 
 describe('Hooks', function () {

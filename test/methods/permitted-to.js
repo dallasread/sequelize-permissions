@@ -1,6 +1,6 @@
 require('should');
 
-var S = require('.'),
+var S = require('../'),
     User, Project;
 
 describe('PermittedTo', function () {
@@ -51,7 +51,7 @@ describe('PermittedTo', function () {
     it('User.permittedTo(\'view\', project)', function (done) {
         User.create({}).then(function (user) {
             Project.create({}).then(function (project) {
-                project.permit(user, 'none').then(function (projectPerm) {
+                project.permit(user, 'none').then(function () {
                     user.permittedTo('view', project).then(function (permitted) {
                         permitted.should.eql(false);
 
@@ -75,7 +75,7 @@ describe('PermittedTo', function () {
     it('Project.permittedTo(\'view\', user)', function (done) {
         User.create({}).then(function (user) {
             Project.create({}).then(function (project) {
-                project.permit(user, 'none').then(function (projectPerm) {
+                project.permit(user, 'none').then(function () {
                     project.permittedTo('view', user, function (permitted) {
                         permitted.should.eql(false);
 
