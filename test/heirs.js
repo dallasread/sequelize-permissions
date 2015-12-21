@@ -4,12 +4,14 @@ var S = require('.'),
     // _ = require('factory-girl-sequelize')(),
     User, Project, Task, Org;
 
+require('sequelize-hierarchy')(S.Sequelize);
+
 describe('Inheritable Parents', function () {
     before(function () {
         Org = S.define('orgs', {});
         User = S.define('users', {});
         Project = S.define('projects', {});
-        Task = S.define('tasks', {});
+        Task = S.define('tasks', {}, { hierarchy: true });
 
         Project.hasPermissionsFor(User, {
             ancestors: [Project],
