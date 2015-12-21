@@ -29,12 +29,19 @@ describe('PermittedTo', function () {
     it('ProjectsUsersPerm.permittedTo(\'view\')', function (done) {
         User.create({}).then(function (user) {
             Project.create({}).then(function (project) {
-                project.permit(user, 'none').then(function (projectPerm) {
+                project.permit('none', user).then(function (projectPerm) {
                     projectPerm.permittedTo('view').should.eql(false);
 
                     project.permit(user, 'view').then(function (projectPerm) {
                         projectPerm.permittedTo('view').should.eql(true);
-                        done();
+
+                        project.unpermit(user).then(function () {
+                            user.permittedTo('view', project).then(function(permitted) {
+                                permitted.should.eql(false);
+
+                                done();
+                            });
+                        });
                     });
                 });
             });
