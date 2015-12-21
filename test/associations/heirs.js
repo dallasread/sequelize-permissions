@@ -10,6 +10,7 @@ describe('Inheritable Parent', function () {
         Project = S.define('projects', {}, { hierarchy: true });
         Task = S.define('tasks', {}, { hierarchy: true });
 
+        Project.belongsTo(Org);
         Project.hasPermissionsFor(User, {
             ancestors: [Project],
             heirs: [{
@@ -24,19 +25,19 @@ describe('Inheritable Parent', function () {
             }
         });
 
+        Task.belongsTo(Project);
+
         S.sync({ force: true }).then(function () {
             done();
         });
     });
 
     it('manages child perm when parent model is created or deleted', function(done) {
+        // EVERY MODEL INHERITS BY DEFAULT
         User.create({}).then(function (user) {
             Project.create().then(function (project) {
                 user.permit('view', project).then(function () {
-                    Project.create({
-                        inheritPerms: 1,
-                        parentId: project.id
-                    }).then(function (subProject) {
+                    Project.create({ parentId: project.id }).then(function (subProject) {
                         user.isPermittedTo('view', subProject).then(function(permitted) {
                             permitted.should.eql(true);
 
@@ -54,42 +55,54 @@ describe('Inheritable Parent', function () {
         });
     });
 
-    // it('manages child perm when parent perm is created, updated, or deleted', function(done) {
-    //     User.create({}).then(function (user) {
-    //         Project.create().then(function (project) {
-    //             Project.create({
-    //                 inheritPerms: 1,
-    //                 parentId: project.id
-    //             }).then(function (subProject) {
-    //                 user.permit('admin', project, function () {
-    //                     user.isPermittedTo('admin', subProject).then(function(permitted) { // <=
-    //                         permitted.should.be.eql(true);
+    it('manages child perm when parent perm is created, updated, or deleted', function(done) {
+        // EVERY MODEL INHERITS BY DEFAULT
+        User.create({}).then(function (user) {
+            Org.create({}).then(function (org) {
+                Project.create({ orgId: org.id }).then(function (project) {
+                    Project.create({ parentId: project.id }).then(function (subProject) {
+                        user.permit('admin', project, function () {
+                            user.isPermittedTo('admin', subProject).then(function(permitted) { // <=
+                                permitted.should.be.eql(true);
 
-    //                         user.permit('view', project, function () {
-    //                             user.isPermittedTo('admin', subProject).then(function(permitted) {
-    //                                 permitted.should.be.eql(false);
+                                user.permit('view', project, function () {
+                                    user.isPermittedTo('admin', subProject).then(function(permitted) {
+                                        permitted.should.be.eql(false);
+                                        console.log('WE NEED TO IMPLEMENT UPDATE TO PASS HERE');
 
-    //                                 user.permit('admin', project, function () {
-    //                                     user.isPermittedTo('admin', subProject).then(function(permitted) {
-    //                                         permitted.should.be.eql(true);
+                                        user.permit('admin', project, function () {
+                                            user.isPermittedTo('admin', subProject).then(function(permitted) {
+                                                permitted.should.be.eql(true);
 
-    //                                         user.unpermit('admin', project, function () {
-    //                                             user.isPermittedTo('view', subProject).then(function(permitted) {
-    //                                                 permitted.should.be.eql(false);
+                                                user.unpermit('admin', project, function () {
+                                                    user.isPermittedTo('view', subProject).then(function(permitted) {
+                                                        permitted.should.be.eql(false);
 
-    //                                                 done();
-    //                                             });
-    //                                         });
-    //                                     });
-    //                                 });
-    //                             });
-    //                         });
-    //                     });
-    //                 });
-    //             });
-    //         });
-    //     });
-    // });
+                                                        Task.create({
+                                                            inheritPerms: 1,
+                                                            projectId: subProject.id
+                                                        }).then(function(task) {
+                                                            user.isPermittedTo('view', task).then(function(permitted) {
+                                                                permitted.should.be.eql(false);
+                                                                console.log('WE NEED TO IMPLEMENT CROSS-MODEL BUBBLE DOWN TO PASS HERE');
+
+                                                                done();
+                                                            });
+                                                        });
+
+                                                    });
+                                                });
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
 
     // it('updates child perms when child\'s inheritPerms changes', function(done) {
     //     User.create({}).then(function (user) {
