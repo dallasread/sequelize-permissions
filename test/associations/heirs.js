@@ -33,19 +33,27 @@ describe('Inheritable Parent', function () {
     });
 
     it('manages child perm when parent model is created or deleted', function(done) {
-        // EVERY MODEL INHERITS BY DEFAULT
         User.create({}).then(function (user) {
             Project.create().then(function (project) {
                 user.permit('view', project).then(function () {
                     Project.create({ parentId: project.id }).then(function (subProject) {
                         user.isPermittedTo('view', subProject).then(function(permitted) {
                             permitted.should.eql(true);
+                            // console.log('SAME-MODEL BUBBLING DOWN ON MODEL CREATE');
 
-                            subProject.destroy().then(function() {
+                            subProject.update({ inheritPerms: 0 }).then(function() {
                                 user.isPermittedTo('view', subProject).then(function(permitted) {
-                                    permitted.should.eql(false);
+                                    permitted.should.eql(true);
+                                    // console.log('SAME-MODEL BUBBLING DOWN ON MODEL UPDATE');
 
-                                    done();
+                                    subProject.destroy().then(function() {
+                                        user.isPermittedTo('view', subProject).then(function(permitted) {
+                                            permitted.should.eql(false);
+                                            // console.log('SAME-MODEL BUBBLING DOWN ON MODEL DELETE');
+
+                                            done();
+                                        });
+                                    });
                                 });
                             });
                         });
@@ -58,39 +66,29 @@ describe('Inheritable Parent', function () {
     it('manages child perm when parent perm is created, updated, or deleted', function(done) {
         // EVERY MODEL INHERITS BY DEFAULT
         User.create({}).then(function (user) {
-            Org.create({}).then(function (org) {
-                Project.create({ orgId: org.id }).then(function (project) {
-                    Project.create({ parentId: project.id }).then(function (subProject) {
-                        user.permit('admin', project, function () {
-                            user.isPermittedTo('admin', subProject).then(function(permitted) { // <=
-                                permitted.should.be.eql(true);
+            Project.create().then(function (project) {
+                Project.create({ parentId: project.id }).then(function (subProject) {
+                    user.permit('admin', project, function () { /// CHANGE THIS TO PERMIT ORG INSTEAD
+                        user.isPermittedTo('admin', subProject).then(function(permitted) { // <=
+                            permitted.should.be.eql(true);
+                            // console.log('SAME-MODEL BUBBLING DOWN ON PERM CREATE');
 
-                                user.permit('view', project, function () {
-                                    user.isPermittedTo('admin', subProject).then(function(permitted) {
-                                        permitted.should.be.eql(false);
-                                        console.log('WE NEED TO IMPLEMENT UPDATE TO PASS HERE');
+                            user.permit('view', project, function () {
+                                user.isPermittedTo('admin', subProject).then(function(permitted) {
+                                    permitted.should.be.eql(false);
+                                    // console.log('SAME-MODEL BUBBLING DOWN ON PERM UPDATE');
 
-                                        user.permit('admin', project, function () {
-                                            user.isPermittedTo('admin', subProject).then(function(permitted) {
-                                                permitted.should.be.eql(true);
+                                    user.permit('admin', project, function () {
+                                        user.isPermittedTo('admin', subProject).then(function(permitted) {
+                                            permitted.should.be.eql(true);
+                                            // console.log('SAME-MODEL BUBBLING DOWN ON PERM UPDATE (FOR THE SAKE OF THE TEST)');
 
-                                                user.unpermit('admin', project, function () {
-                                                    user.isPermittedTo('view', subProject).then(function(permitted) {
-                                                        permitted.should.be.eql(false);
+                                            user.unpermit(project, function () {
+                                                user.isPermittedTo('view', subProject).then(function(permitted) {
+                                                    permitted.should.be.eql(false);
+                                                    // console.log('SAME-MODEL BUBBLING DOWN ON PERM DELETE');
 
-                                                        Task.create({
-                                                            inheritPerms: 1,
-                                                            projectId: subProject.id
-                                                        }).then(function(task) {
-                                                            user.isPermittedTo('view', task).then(function(permitted) {
-                                                                permitted.should.be.eql(false);
-                                                                console.log('WE NEED TO IMPLEMENT CROSS-MODEL BUBBLE DOWN TO PASS HERE');
-
-                                                                done();
-                                                            });
-                                                        });
-
-                                                    });
+                                                    done();
                                                 });
                                             });
                                         });
@@ -104,26 +102,11 @@ describe('Inheritable Parent', function () {
         });
     });
 
-    // it('updates child perms when child\'s inheritPerms changes', function(done) {
-    //     User.create({}).then(function (user) {
-    //         Project.create().then(function (project) {
-    //             Project.create({
-    //                 inheritPerms: 1,
-    //                 parentId: project.id
-    //             }).then(function (subProject) {
-    //                 S.models['projects-users-perms'].create({
-    //                     projectId: project.id,
-    //                     userId: user.id,
-    //                     permissionLevel: 10
-    //                 }).then(function (projectPerm) {
-
-    //                 });
-    //             });
-    //         });
-    //     });
-    // });
-
-    // it('updates its different-model heirs when model changes');
-    // it('updates its heirs when perm changes');
-    // it('updates its different-model heirs when perm changes');
+    // console.log('DIFFERENT-MODEL BUBBLING DOWN ON MODEL CREATE');
+    // console.log('DIFFERENT-MODEL BUBBLING DOWN ON MODEL UPDATE');
+    // console.log('DIFFERENT-MODEL BUBBLING DOWN ON MODEL DELETE');
+    //
+    // console.log('DIFFERENT-MODEL BUBBLING DOWN ON PERM CREATE');
+    // console.log('DIFFERENT-MODEL BUBBLING DOWN ON PERM UPDATE');
+    // console.log('DIFFERENT-MODEL BUBBLING DOWN ON PERM DELETE');
 });
