@@ -1,3 +1,5 @@
+**This is v0.0.1... Don't use it!**
+
 `sequelize-permissions` adds permissions to your models. Plays nice with `sequalize-hierarchy`.
 
 ```
