@@ -1,12 +1,14 @@
 require('should');
 
-var S = require('../'),
-    User, Project;
+var S, Org, User, Project, Task;
 
 describe('FindPermitted', function () {
     before(function (done) {
-        User = S.define('users', {});
-        Project = S.define('projects', {});
+        S = require('../').create();
+        Org = S.Org;
+        User = S.User;
+        Project = S.Project;
+        Task = S.Task;
 
         Project.hasPermissionsFor(User, {
             defaultPermissionLevel: 0,
@@ -21,13 +23,13 @@ describe('FindPermitted', function () {
             }
         });
 
-        S.resetTestDB(done);
+        S.DB.resetTestDB(done);
     });
 
     it('User.findPermitted(Project, \'view\')', function (done) {
         User.create({}).then(function (user) {
             user.findPermitted(Project, {
-                permissionLevel: 'view'
+                permissionLevel: 'view' // test explicit form
             }).then(function (projects) {
                 projects.length.should.eql(0);
 
@@ -62,17 +64,11 @@ describe('FindPermitted', function () {
                 users.length.should.eql(0);
 
                 User.create({}).then(function (user) {
-                    S.models['projects-users-perms'].create({
-                        projectId: project.id,
-                        userId: user.id,
-                        permissionLevel: 0
-                    }).then(function (projectPerm) {
+                    user.permit(project, 0).then(function (projectPerm) {
                         user.findPermitted(Project, 'view').then(function (users) {
                             users.length.should.eql(0);
 
-                            projectPerm.update({
-                                permissionLevel: 20
-                            }).then(function () {
+                            user.permit(project, 20).then(function () {
                                 user.findPermitted(Project, 'view').then(function (users) {
                                     users.length.should.eql(1);
 

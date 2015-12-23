@@ -1,12 +1,14 @@
 require('should');
 
-var S = require('../'),
-    User, Project;
+var S, Org, User, Project, Task;
 
 describe('Hooks', function () {
     before(function (done) {
-        User = S.define('users', {});
-        Project = S.define('projects', {});
+        S = require('../').create();
+        Org = S.Org;
+        User = S.User;
+        Project = S.Project;
+        Task = S.Task;
 
         Project.hasPermissionsFor(User, {
             ancestors: [Project],
@@ -23,7 +25,7 @@ describe('Hooks', function () {
             }
         });
 
-        S.resetTestDB(done);
+        S.DB.resetTestDB(done);
     });
 
     it('creates hooks and associations on model', function () {
@@ -38,7 +40,7 @@ describe('Hooks', function () {
     });
 
     it('creates hooks on perm', function () {
-        var perm = S.models['projects-users-perms'];
+        var perm = S.DB.models['projects-users-perms'];
 
         (!!perm.hasHook('afterCreate')).should.eql(true);
         (!!perm.hasHook('afterUpdate')).should.eql(true);

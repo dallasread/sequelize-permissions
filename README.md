@@ -4,12 +4,7 @@
 Project.hasPermissionsFor(User, { 
     via: ProjectPerm, // What is my permissions model?
     ancestors: [Org, Project], // Who can I inherit my permissions from?
-    heirs: [Project, Task, {
-        model: Activity,
-        perm: ActivityPerm,
-        as: 'activities'
-    }], // Who & What should change when I change?
-    parentField: 'parent_id',
+    heirs: [Project, Task, Activity], // Who's permissinos rely on me?
     defaultPermissionLevel: 1,
     permissionLevels: {
         1: 'read',

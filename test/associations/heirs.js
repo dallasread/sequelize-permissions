@@ -1,22 +1,21 @@
 require('should');
 
-var S = require('../'),
-    User, Project, Task, Org;
+var S, Org, User, Project, Task;
 
 describe('Inheritable Parent', function () {
     before(function (done) {
-        Org = S.define('orgs', {});
-        User = S.define('users', {});
-        Project = S.define('projects', {}, { hierarchy: true });
-        Task = S.define('tasks', {}, { hierarchy: true });
+        S = require('../').create();
+        Org = S.Org;
+        User = S.User;
+        Project = S.Project;
+        Task = S.Task;
 
         Project.belongsTo(Org);
+        Task.belongsTo(Project);
+
         Project.hasPermissionsFor(User, {
-            ancestors: [Project],
-            heirs: [{
-                model: Project,
-                parentField: 'parentId'
-            }, Task],
+            ancestors: [Org, Project],
+            heirs: [Project, Task],
             defaultPermissionLevel: 0,
             permissionLevels: {
                 10: 'view',
@@ -25,10 +24,7 @@ describe('Inheritable Parent', function () {
             }
         });
 
-        User.belongsTo(Org);
-        Task.belongsTo(Project);
-
-        S.resetTestDB(done);
+        S.DB.resetTestDB(done);
     });
 
     it('manages same-model bubbling for models', function(done) {
@@ -101,66 +97,26 @@ describe('Inheritable Parent', function () {
     });
 
     it('manages different-model bubbling for models', function(done) {
-        Org.create({}).then(function(org) {
+        Org.create().then(function(org) {
             User.create({}).then(function (user) {
                 user.permit('view', org).then(function () {
-                    Project.create().then(function (project) {
-                        Task.create().then(function (task) {
+                    Project.create({ orgId: org.id }).then(function (project) {
+                        Task.create({ projectId: project.id }).then(function (task) {
                             user.isPermittedTo('view', task).then(function(permitted) {
                                 permitted.should.eql(true);
-                                console.log('DIFFERENT-MODEL BUBBLING DOWN ON MODEL CREATE');
+                                // console.log('DIFFERENT-MODEL BUBBLING DOWN ON MODEL CREATE');
 
-                                done();
+                                project.update({ inheritPerms: 0 }).then(function() {
+                                    user.isPermittedTo('view', task).then(function(permitted) {
+                                        permitted.should.eql(true);
+                                        // console.log('DIFFERENT-MODEL BUBBLING DOWN ON MODEL UPDATE');
 
-                                // project.update({ inheritPerms: 0 }).then(function() {
-                                //     user.isPermittedTo('view', task).then(function(permitted) {
-                                //         permitted.should.eql(true);
-                                //         console.log('DIFFERENT-MODEL BUBBLING DOWN ON MODEL UPDATE');
+                                        task.destroy().then(function() {
+                                            user.isPermittedTo('view', task).then(function(permitted) {
+                                                permitted.should.eql(false);
+                                                // console.log('DIFFERENT-MODEL BUBBLING DOWN ON MODEL DELETE');
 
-                                //         task.destroy().then(function() {
-                                //             user.isPermittedTo('view', task).then(function(permitted) {
-                                //                 permitted.should.eql(false);
-                                //                 console.log('DIFFERENT-MODEL BUBBLING DOWN ON MODEL DELETE');
-
-                                //                 done();
-                                //             });
-                                //         });
-                                //     });
-                                // });
-                            });
-                        });
-                    });
-                });
-            });
-        });
-    });
-
-    it('manages different-model bubbling for perms', function(done) {
-        Org.create({}).then(function (org) {
-            User.create({}).then(function (user) {
-                Project.create({}).then(function (project) {
-                    user.permit('admin', org, function () {
-                        user.isPermittedTo('admin', project).then(function(permitted) { // <=
-                            permitted.should.be.eql(true);
-                            console.log('DIFFERENT-MODEL BUBBLING DOWN ON PERM CREATE');
-
-                            user.permit('view', org, function () {
-                                user.isPermittedTo('admin', project).then(function(permitted) {
-                                    permitted.should.be.eql(false);
-                                    console.log('DIFFERENT-MODEL BUBBLING DOWN ON PERM UPDATE');
-
-                                    user.permit('admin', org, function () {
-                                        user.isPermittedTo('admin', project).then(function(permitted) {
-                                            permitted.should.be.eql(true);
-                                            console.log('DIFFERENT-MODEL BUBBLING DOWN ON PERM UPDATE (FOR THE SAKE OF THE TEST)');
-
-                                            user.unpermit(org, function () {
-                                                user.isPermittedTo('view', project).then(function(permitted) {
-                                                    permitted.should.be.eql(false);
-                                                    console.log('DIFFERENT-MODEL BUBBLING DOWN ON PERM DELETE');
-
-                                                    done();
-                                                });
+                                                done();
                                             });
                                         });
                                     });
@@ -172,4 +128,42 @@ describe('Inheritable Parent', function () {
             });
         });
     });
+
+    // it('manages different-model bubbling for perms', function(done) {
+    //     Org.create({}).then(function (org) {
+    //         User.create({}).then(function (user) {
+    //             Project.create({}).then(function (project) {
+    //                 user.permit('admin', org, function () {
+    //                     user.isPermittedTo('admin', project).then(function(permitted) { // <=
+    //                         permitted.should.be.eql(true);
+    //                         console.log('DIFFERENT-MODEL BUBBLING DOWN ON PERM CREATE');
+
+    //                         user.permit('view', org, function () {
+    //                             user.isPermittedTo('admin', project).then(function(permitted) {
+    //                                 permitted.should.be.eql(false);
+    //                                 console.log('DIFFERENT-MODEL BUBBLING DOWN ON PERM UPDATE');
+
+    //                                 user.permit('admin', org, function () {
+    //                                     user.isPermittedTo('admin', project).then(function(permitted) {
+    //                                         permitted.should.be.eql(true);
+    //                                         console.log('DIFFERENT-MODEL BUBBLING DOWN ON PERM UPDATE (FOR THE SAKE OF THE TEST)');
+
+    //                                         user.unpermit(org, function () {
+    //                                             user.isPermittedTo('view', project).then(function(permitted) {
+    //                                                 permitted.should.be.eql(false);
+    //                                                 console.log('DIFFERENT-MODEL BUBBLING DOWN ON PERM DELETE');
+
+    //                                                 done();
+    //                                             });
+    //                                         });
+    //                                     });
+    //                                 });
+    //                             });
+    //                         });
+    //                     });
+    //                 });
+    //             });
+    //         });
+    //     });
+    // });
 });

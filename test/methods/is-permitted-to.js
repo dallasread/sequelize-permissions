@@ -1,12 +1,14 @@
 require('should');
 
-var S = require('../'),
-    User, Project;
+var S, Org, User, Project, Task;
 
 describe('isPermittedTo', function () {
     before(function (done) {
-        User = S.define('users', {});
-        Project = S.define('projects', {});
+        S = require('../').create();
+        Org = S.Org;
+        User = S.User;
+        Project = S.Project;
+        Task = S.Task;
 
         Project.hasPermissionsFor(User, {
             defaultPermissionLevel: 0,
@@ -21,7 +23,7 @@ describe('isPermittedTo', function () {
             }
         });
 
-        S.resetTestDB(done);
+        S.DB.resetTestDB(done);
     });
 
     it('ProjectsUsersPerm.isPermittedTo(\'view\')', function (done) {
