@@ -129,41 +129,41 @@ describe('Inheritable Parent', function () {
         });
     });
 
-    // it('manages different-model bubbling for perms', function(done) {
-    //     Org.create({}).then(function (org) {
-    //         User.create({}).then(function (user) {
-    //             Project.create({}).then(function (project) {
-    //                 user.permit('admin', org, function () {
-    //                     user.isPermittedTo('admin', project).then(function(permitted) { // <=
-    //                         permitted.should.be.eql(true);
-    //                         console.log('DIFFERENT-MODEL BUBBLING DOWN ON PERM CREATE');
+    it('manages different-model bubbling for perms', function(done) {
+        Org.create({}).then(function (org) {
+            User.create({}).then(function (user) {
+                Project.create({ orgId: org.id }).then(function (project) {
+                    user.permit('admin', org, function () {
+                        user.isPermittedTo('admin', project).then(function(permitted) { // <=
+                            permitted.should.be.eql(true);
+                            // console.log('DIFFERENT-MODEL BUBBLING DOWN ON PERM CREATE');
 
-    //                         user.permit('view', org, function () {
-    //                             user.isPermittedTo('admin', project).then(function(permitted) {
-    //                                 permitted.should.be.eql(false);
-    //                                 console.log('DIFFERENT-MODEL BUBBLING DOWN ON PERM UPDATE');
+                            user.permit('view', org, function () {
+                                user.isPermittedTo('admin', project).then(function(permitted) {
+                                    permitted.should.be.eql(false);
+                                    // console.log('DIFFERENT-MODEL BUBBLING DOWN ON PERM UPDATE');
 
-    //                                 user.permit('admin', org, function () {
-    //                                     user.isPermittedTo('admin', project).then(function(permitted) {
-    //                                         permitted.should.be.eql(true);
-    //                                         console.log('DIFFERENT-MODEL BUBBLING DOWN ON PERM UPDATE (FOR THE SAKE OF THE TEST)');
+                                    user.permit('admin', org, function () {
+                                        user.isPermittedTo('admin', project).then(function(permitted) {
+                                            permitted.should.be.eql(true);
+                                            // console.log('DIFFERENT-MODEL BUBBLING DOWN ON PERM UPDATE (FOR THE SAKE OF THE TEST)');
 
-    //                                         user.unpermit(org, function () {
-    //                                             user.isPermittedTo('view', project).then(function(permitted) {
-    //                                                 permitted.should.be.eql(false);
-    //                                                 console.log('DIFFERENT-MODEL BUBBLING DOWN ON PERM DELETE');
+                                            user.unpermit(org, function () {
+                                                user.isPermittedTo('view', project).then(function(permitted) {
+                                                    permitted.should.be.eql(false);
+                                                    // console.log('DIFFERENT-MODEL BUBBLING DOWN ON PERM DELETE');
 
-    //                                                 done();
-    //                                             });
-    //                                         });
-    //                                     });
-    //                                 });
-    //                             });
-    //                         });
-    //                     });
-    //                 });
-    //             });
-    //         });
-    //     });
-    // });
+                                                    done();
+                                                });
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
 });
