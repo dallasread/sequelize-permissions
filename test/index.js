@@ -1,11 +1,11 @@
-var Sequelize = require('sequelize');
-
-require('sequelize-hierarchy')(Sequelize);
-
 var Generator = require('generate-js');
 
 var S = Generator.generate(function S() {
     var _ = this;
+
+    var Sequelize = require('sequelize');
+
+    require('sequelize-hierarchy')(Sequelize);
 
     try { require('fs').unlinkSync('./tmp.sqlite'); } catch (e) {}
 
@@ -22,6 +22,14 @@ var S = Generator.generate(function S() {
         Project: sequelize.define('projects', {}, { hierarchy: true }),
         Task: sequelize.define('tasks', {}, { hierarchy: true })
     });
+
+    _.DB.resetTestDB = function(done) {
+        _.DB.query('PRAGMA foreign_keys = OFF').then(function() {
+            _.DB.sync({ force: true }).then(function () {
+                done();
+            });
+        });
+    };
 
     _.Project.belongsTo(_.Org);
     _.Task.belongsTo(_.Project);

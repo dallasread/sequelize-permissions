@@ -5,10 +5,10 @@ var S, Org, User, Project, Task;
 describe('FindPermitted', function () {
     before(function (done) {
         S = require('../').create();
-        Org = S.Org;
-        User = S.User;
-        Project = S.Project;
-        Task = S.Task;
+        Org = S.DB.model('orgs');
+        User = S.DB.model('users');
+        Project = S.DB.model('projects');
+        Task = S.DB.model('tasks');
 
         S.DB.resetTestDB(done);
     });
