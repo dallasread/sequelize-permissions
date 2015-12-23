@@ -10,19 +10,6 @@ describe('FindPermitted', function () {
         Project = S.Project;
         Task = S.Task;
 
-        Project.hasPermissionsFor(User, {
-            defaultPermissionLevel: 0,
-            permissionLevels: {
-                0: 'none',
-                10: 'view',
-                20: 'comment',
-                30: 'write',
-                40: 'share',
-                50: 'edit',
-                60: 'admin'
-            }
-        });
-
         S.DB.resetTestDB(done);
     });
 

@@ -5,23 +5,10 @@ var S, Org, User, Project, Task;
 describe('isPermittedTo', function () {
     before(function (done) {
         S = require('../').create();
-        Org = S.Org;
-        User = S.User;
-        Project = S.Project;
-        Task = S.Task;
-
-        Project.hasPermissionsFor(User, {
-            defaultPermissionLevel: 0,
-            permissionLevels: {
-                0: 'none',
-                10: 'view',
-                20: 'comment',
-                30: 'write',
-                40: 'share',
-                50: 'edit',
-                60: 'admin'
-            }
-        });
+        Org = S.DB.model('orgs');
+        User = S.DB.model('users');
+        Project = S.DB.model('projects');
+        Task = S.DB.model('tasks');
 
         S.DB.resetTestDB(done);
     });

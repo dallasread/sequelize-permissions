@@ -10,20 +10,6 @@ describe('Inheritable Parent', function () {
         Project = S.Project;
         Task = S.Task;
 
-        Project.belongsTo(Org);
-        Task.belongsTo(Project);
-
-        Project.hasPermissionsFor(User, {
-            ancestors: [Org, Project],
-            heirs: [Project, Task],
-            defaultPermissionLevel: 0,
-            permissionLevels: {
-                10: 'view',
-                30: 'write',
-                60: 'admin'
-            }
-        });
-
         S.DB.resetTestDB(done);
     });
 
