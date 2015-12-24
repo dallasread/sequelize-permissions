@@ -23,9 +23,7 @@ describe('isPermittedTo', function () {
                         projectPerm.isPermittedTo('view').should.eql(true);
 
                         project.unpermit(user).then(function () {
-                            user.isPermittedTo('view', project).then(function(permitted) {
-                                permitted.should.eql(false);
-
+                            user.isPermittedTo('view', project).catch(function() {
                                 done();
                             });
                         });
@@ -39,16 +37,11 @@ describe('isPermittedTo', function () {
         User.create({}).then(function (user) {
             Project.create({}).then(function (project) {
                 project.permit(user, 'none').then(function () {
-                    user.isPermittedTo('view', project).then(function (permitted) {
-                        permitted.should.eql(false);
+                    user.isPermittedTo('view', project).catch(function () {
 
                         project.permit(user, 'view').then(function () {
-                            user.isPermittedTo('view', project, function (permitted) {
-                                permitted.should.eql(true);
-
-                                user.isPermittedTo('admin', project).then(function (permitted) {
-                                    permitted.should.eql(false);
-
+                            user.isPermittedTo('view', project, function () {
+                                user.isPermittedTo('admin', project).catch(function() {
                                     done();
                                 });
                             });
@@ -63,15 +56,15 @@ describe('isPermittedTo', function () {
         User.create({}).then(function (user) {
             Project.create({}).then(function (project) {
                 project.permit(user, 'none').then(function () {
-                    project.isPermittedTo('view', user, function (permitted) {
-                        permitted.should.eql(false);
+                    project.isPermittedTo('view', user, function (err) {
+                        err.should.be.ok;
 
                         project.permit(user, 'view').then(function () {
-                            project.isPermittedTo('view', user).then(function (permitted) {
-                                permitted.should.eql(true);
+                            project.isPermittedTo('view', user).then(function (perm) {
+                                perm.should.be.ok;
 
-                                project.isPermittedTo('admin', user).then(function (permitted) {
-                                    permitted.should.eql(false);
+                                project.isPermittedTo('admin', user).catch(function (err) {
+                                    err.should.be.ok;
 
                                     done();
                                 });
