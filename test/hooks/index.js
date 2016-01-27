@@ -4,7 +4,7 @@ var S, Org, User, Project, Task;
 
 describe('Hooks', function () {
     before(function (done) {
-        S = require('../').create();
+        S = require('../');
         Org = S.Org;
         User = S.User;
         Project = S.Project;
@@ -18,10 +18,15 @@ describe('Hooks', function () {
         (!!Project.hasHook('afterUpdate')).should.eql(true);
         (!!Project.hasHook('afterDestroy')).should.eql(true);
 
+        (!!Task.hasHook('afterCreate')).should.eql(true);
+        (!!Task.hasHook('afterUpdate')).should.eql(true);
+        (!!Task.hasHook('afterDestroy')).should.eql(true);
+
         (!!User.hasHook('afterDestroy')).should.eql(true);
 
         Project.associations.should.have.propertyByPath('users');
         Project.associations.should.have.propertyByPath('projects-users-perms');
+        Task.associations.should.have.propertyByPath('tasks-users-perms');
     });
 
     it('creates hooks on perm', function () {

@@ -12,7 +12,7 @@ var S = Generator.generate(function S() {
     var sequelize = new Sequelize('sequelize-permissions', null, null, {
         dialect: 'sqlite',
         storage: './tmp.sqlite',
-        logging: false,
+        logging: false
     });
 
     _.defineProperties({
@@ -45,4 +45,6 @@ var S = Generator.generate(function S() {
     });
 });
 
-module.exports = S;
+var Test = S.create();
+
+module.exports = Test;
