@@ -4,6 +4,7 @@
 
 ```
 Project.hasPermissionsFor(User, { 
+    groupedAs: Team,
     ancestors: [Project], // Who can I inherit my permissions from?
     heirs: [Project, Task], // Who's permissions rely on me?
     defaultPermissionLevel: 1, // Defaults to 0
@@ -24,9 +25,4 @@ Project.hasPermissionsFor(User, {
  => Project.unpermit(User);
  => User.permit(Project, 'view');
  => User.unpermit(Project);
-
- => set up BubbleInheritanceDownModel on Project
- => set up BubbleInheritanceDownPerms on ProjectPerm
 ```
-
-NOTE: Test files must be run individually as there's a weird *something* going on.
