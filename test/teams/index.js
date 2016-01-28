@@ -78,4 +78,49 @@ describe('Team Member', function () {
             });
         });
     });
+
+    it('can be (un)permitted to view lists of items', function(done) {
+        User.create({}).then(function (user) {
+            Team.create({}).then(function (team) {
+
+                team.permit(user, 'admin').then(function (teamUserPerm) {
+                    Project.create({}).then(function (project) {
+                        team.permit(project, 'view').then(function() {
+                            user.findPermitted(Project, 'view').then(function(permitted) {
+                                permitted.length.should.eql(1);
+
+                                Project.create({ parentId: project.id }).then(function (subProject) {
+                                    user.findPermitted(Project, 'view').then(function(permitted) {
+                                        permitted.length.should.eql(2);
+
+                                        Task.create({ projectId: project.id }).then(function (task) {
+                                            user.findPermitted('view', Task).then(function(permitted) {
+                                                permitted.length.should.eql(1);
+
+                                                team.unpermit(project).then(function() {
+                                                    user.findPermitted(Project, 'view').then(function(permitted) {
+                                                        permitted.length.should.eql(0);
+
+                                                        user.findPermitted(Task, 'view').then(function(permitted) {
+                                                            permitted.length.should.eql(0);
+
+                                                            done();
+                                                        });
+                                                    });
+                                                });
+
+                                            });
+                                        });
+
+                                    });
+                                });
+
+                            });
+                        });
+                    });
+                });
+
+            });
+        });
+    });
 });
