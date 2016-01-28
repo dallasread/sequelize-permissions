@@ -19,16 +19,14 @@ describe('Inheritable Parent', function () {
                 user.permit('view', project).then(function () {
                     Project.create({ parentId: project.id }).then(function (subProject) {
                         user.isPermittedTo('view', subProject).then(function(subProjectPerm) {
-                            subProjectPerm.isPermittedTo('view').should.eql(true);
                             // console.log('SAME-MODEL BUBBLING DOWN ON MODEL CREATE');
 
                             subProject.update({ inheritPerms: 0 }).then(function() {
                                 user.isPermittedTo('view', subProject).then(function(subProjectPerm) {
-                                    subProjectPerm.isPermittedTo('view').should.eql(true);
                                     // console.log('SAME-MODEL BUBBLING DOWN ON MODEL UPDATE');
 
                                     subProject.destroy().then(function() {
-                                        user.isPermittedTo('view', subProject).catch(function(err) {
+                                        user.isPermittedTo('view', subProject).catch(function() {
                                             // console.log('SAME-MODEL BUBBLING DOWN ON MODEL DELETE');
 
                                             done();
@@ -48,17 +46,15 @@ describe('Inheritable Parent', function () {
             Project.create().then(function (project) {
                 Project.create({ parentId: project.id }).then(function (subProject) {
                     user.permit('admin', project, function () {
-                        user.isPermittedTo('admin', subProject).then(function(subProjectPerm) { // <=
-                            subProjectPerm.isPermittedTo('admin').should.eql(true);
+                        user.isPermittedTo('admin', subProject).then(function(subProjectPerm) {
                             // console.log('SAME-MODEL BUBBLING DOWN ON PERM CREATE');
 
                             user.permit('view', project, function () {
-                                user.isPermittedTo('admin', subProject).catch(function(subProjectPerm) {
+                                subProject.isPermittedTo('admin', user).catch(function(subProjectPerm) {
                                     // console.log('SAME-MODEL BUBBLING DOWN ON PERM UPDATE');
 
                                     user.permit('admin', project, function () {
                                         user.isPermittedTo('admin', subProject).then(function(subProjectPerm) {
-                                            subProjectPerm.isPermittedTo('admin').should.eql(true);
                                             // console.log('SAME-MODEL BUBBLING DOWN ON PERM UPDATE (FOR THE SAKE OF THE TEST)');
 
                                             user.unpermit(project, function () {

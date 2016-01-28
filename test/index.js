@@ -36,7 +36,7 @@ var TestSetup = Generator.generate(function TestSetup() {
     _.Task.belongsTo(_.Project);
 
     _.Project.hasPermissionsFor(_.User, {
-        // groupedAs: _.Team,
+        groupedAs: _.Team,
         ancestors: [_.Org, _.Project],
         heirs: [_.Project, _.Task],
         permissionLevels: {

@@ -4,7 +4,7 @@
 
 ```
 Project.hasPermissionsFor(User, { 
-    groupedAs: Team,
+    groupedAs: Team, // Users can now inherit Teams permissions - requires Team.hasPermissionsFor(User) & Project.hasPermissionsFor(Team) relationships
     ancestors: [Project], // Who can I inherit my permissions from?
     heirs: [Project, Task], // Who's permissions rely on me?
     defaultPermissionLevel: 1, // Defaults to 0
