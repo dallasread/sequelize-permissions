@@ -15,6 +15,24 @@ describe('Team Member', function () {
         S.DB.resetTestDB(done);
     });
 
+    it('can see its teams', function(done) {
+        User.create({}).then(function (user) {
+            Team.create({}).then(function (team) {
+                Team.create({}).then(function (team2) {
+                    team2.permit(user, 'admin').then(function (team2UserPerm) {
+                        user.findPermitted(Team, {
+                            teamId: team2.id,
+                            permissionLevel: 'admin'
+                        }).then(function(foundTeams) {
+                            foundTeams.length.should.eql(1);
+                            done();
+                        });
+                    });
+                });
+            });
+        });
+    });
+
     it('can be (un)permitted to view single items', function(done) {
         User.create({}).then(function (user) {
             Team.create({}).then(function (team) {
