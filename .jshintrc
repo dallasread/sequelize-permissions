@@ -6,8 +6,7 @@
     "before",
     "beforeEach",
     "after",
-    "afterEach",
-    "-Promise"
+    "afterEach"
   ],
   "globals": {
     "$": false
