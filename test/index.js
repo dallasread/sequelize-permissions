@@ -6,17 +6,21 @@ var TestSetup = Generator.generate(function TestSetup() {
     var Sequelize = require('sequelize');
 
     require('sequelize-hierarchy')(Sequelize);
+    require('../')(Sequelize);
 
     try { require('fs').unlinkSync('./tmp.sqlite'); } catch (e) {}
 
     var sequelize = new Sequelize('sequelize-permissions', null, null, {
         dialect: 'sqlite',
         storage: './tmp.sqlite',
-        logging: false
+        logging: false,
+        retry: {
+            max: 3
+        }
     });
 
     _.defineProperties({
-        DB: require('../')(sequelize),
+        DB: sequelize,
         Org: sequelize.define('orgs', {}),
         User: sequelize.define('users', {}),
         Project: sequelize.define('projects', {}, { hierarchy: true }),

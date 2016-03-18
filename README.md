@@ -1,5 +1,8 @@
 **This is v0.0.1... Don't use it!**
 
+# NEED TESTS/IMPLEMENTATION FOR:
+- ? isPermittedTo.viaAttrs should accept { permissionLevel: 'view' }
+
 `sequelize-permissions` adds permissions to your models. Plays nice with `sequalize-hierarchy`.
 
 ```

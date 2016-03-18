@@ -27,7 +27,8 @@
     "sqlite3": "^3.1.1"
   },
   "dependencies": {
-    "async": "^1.5.0",
-    "generate-js": "^2.1.3"
+    "generate-js": "^2.1.3",
+    "no-async": "^1.1.1",
+    "sequelize": "^3.19.3"
   }
 }
