@@ -15,7 +15,7 @@ module.exports = {
                     if (typeof next === 'function') return next(null, perm);
                     resolve(perm);
                 } else {
-                    err = new Error('Unauthorized.');
+                    err = new Error('Not permitted.');
                     if (typeof next === 'function') return next(err);
                     reject(err);
                 }

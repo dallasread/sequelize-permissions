@@ -15,21 +15,26 @@ describe('FindPermitted', function () {
 
     it('User.findPermitted(Project, \'view\')', function (done) {
         User.create({}).then(function (user) {
-            user.findPermitted(Project, {
-                permissionLevel: 'view' // test explicit form
-            }).then(function (projects) {
+            user.findPermitted(Project, 10).then(function (projects) {
                 projects.length.should.eql(0);
 
                 Project.create().then(function (project) {
                     user.findPermitted(Project, 'view').then(function (projects) {
                         projects.length.should.eql(0);
 
-                        project.permit(user, 0).then(function () {
-                            user.findPermitted(Project, 'view').then(function (projects) {
+
+                        project.permit({
+                            model: User,
+                            id: user.id
+                        }, 0).then(function () {
+                            project.findPermitted(User, 'view').then(function (projects) {
                                 projects.length.should.eql(0);
 
                                 project.permit(user, 20).then(function () {
-                                    user.findPermitted(Project, 'view').then(function (projects) {
+                                    user.findPermitted(Project, {
+                                        projectId: [project.id],
+                                        permissionLevel: 'view'
+                                    }).then(function (projects) {
                                         projects.length.should.eql(1);
 
                                         done();
@@ -62,8 +67,6 @@ describe('FindPermitted', function () {
                                     done();
                                 });
                             });
-
-                            done();
                         });
                     });
                 });

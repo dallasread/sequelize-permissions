@@ -16,16 +16,12 @@ describe('isPermittedTo', function () {
     it('ProjectsUsersPerm.isPermittedTo(\'view\')', function (done) {
         User.create({}).then(function (user) {
             Project.create({}).then(function (project) {
-                project.permit('none', user).then(function (projectPerm) {
-                    projectPerm.isPermittedTo('view').should.eql(false);
-
-                    project.permit(user, 'view').then(function (projectPerm) {
-                        projectPerm.isPermittedTo('view').should.eql(true);
-
-                        project.unpermit(user).then(function () {
-                            user.isPermittedTo('view', project).catch(function() {
-                                done();
-                            });
+                project.permit(user, 'view').then(function (projectPerm) {
+                    project.unpermit(user).then(function () {
+                        user.isPermittedTo({
+                            permissionLevel: 'view'
+                        }, project).catch(function() {
+                            done();
                         });
                     });
                 });
@@ -36,14 +32,15 @@ describe('isPermittedTo', function () {
     it('User.isPermittedTo(\'view\', project)', function (done) {
         User.create({}).then(function (user) {
             Project.create({}).then(function (project) {
-                project.permit(user, 'none').then(function () {
-                    user.isPermittedTo('view', project).catch(function () {
+                user.isPermittedTo('view', {
+                    model: Project,
+                    id: project.id
+                }).catch(function () {
 
-                        project.permit(user, 'view').then(function () {
-                            user.isPermittedTo('view', project, function () {
-                                user.isPermittedTo('admin', project).catch(function() {
-                                    done();
-                                });
+                    project.permit(user, 'view').then(function () {
+                        user.isPermittedTo('view', project).then(function () {
+                            user.isPermittedTo('admin', project).catch(function() {
+                                done();
                             });
                         });
                     });
@@ -55,17 +52,13 @@ describe('isPermittedTo', function () {
     it('Project.isPermittedTo(\'view\', user)', function (done) {
         User.create({}).then(function (user) {
             Project.create({}).then(function (project) {
-                project.permit(user, 'none').then(function () {
-                    project.isPermittedTo('view', user, function (err) {
-                        err.should.be.ok;
+                project.permit(user, 'none').catch(function () {
+                    project.isPermittedTo('view', user).catch(function(){
 
                         project.permit(user, 'view').then(function () {
                             project.isPermittedTo('view', user).then(function (perm) {
-                                perm.should.be.ok;
 
                                 project.isPermittedTo('admin', user).catch(function (err) {
-                                    err.should.be.ok;
-
                                     done();
                                 });
                             });
