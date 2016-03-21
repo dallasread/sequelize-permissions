@@ -9,6 +9,7 @@ describe('Inheritable Parent', function () {
         User = S.User;
         Project = S.Project;
         Task = S.Task;
+        Activity = S.Activity;
 
         S.DB.resetTestDB(done);
     });
@@ -160,6 +161,80 @@ describe('Inheritable Parent', function () {
                             user.isPermittedTo('admin', task).then(function() {
                                 user2.permit('admin', project).then(function () {
                                     user2.isPermittedTo('admin', task).then(function() {
+                                        done();
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
+
+    it('basic scenario', function(done) {
+        User.create({}).then(function (user) {
+            Project.create({}).then(function (project) {
+                Task.create({ projectId: project.id }).then(function(task) {
+                    user.permit('admin', project).then(function () {
+                        user.isPermittedTo('admin', task).then(function() {
+                            done();
+                        });
+                    });
+                });
+            });
+        });
+    });
+
+    it('collaborative scenario', function(done) {
+        User.create({}).then(function (user) {
+            User.create({}).then(function (user2) {
+                Project.create({}).then(function (project) {
+                    user.permit('admin', project).then(function () {
+                        user2.permit('admin', project).then(function () {
+                            Task.create({ projectId: project.id }).then(function(task) {
+                                user.isPermittedTo('admin', task).then(function() {
+                                    done();
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
+
+    it('activities for tasks', function(done) {
+        User.create({}).then(function (user) {
+            User.create({}).then(function (user2) {
+                Project.create({}).then(function (project) {
+                    user.permit('admin', project).then(function () {
+                        user2.permit('admin', project).then(function () {
+                            Task.create({ projectId: project.id }).then(function(task) {
+                                Activity.create({ taskId: task.id }).then(function(activity) {
+                                    user.isPermittedTo('admin', activity).then(function() {
+                                        user2.isPermittedTo('admin', activity).then(function() {
+                                            done();
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
+
+    it('activities for projects', function(done) {
+        User.create({}).then(function (user) {
+            User.create({}).then(function (user2) {
+                Project.create({}).then(function (project) {
+                    user.permit('admin', project).then(function () {
+                        user2.permit('admin', project).then(function () {
+                            Activity.create({ projectId: project.id }).then(function(activity) {
+                                user.isPermittedTo('admin', activity).then(function() {
+                                    user2.isPermittedTo('admin', activity).then(function() {
                                         done();
                                     });
                                 });

@@ -1,13 +1,10 @@
-**This is v0.0.1... Don't use it!**
-
-# NEED TESTS/IMPLEMENTATION FOR:
-- ? isPermittedTo.viaAttrs should accept { permissionLevel: 'view' }
+**This is v0.x.x... Don't use it!**
 
 `sequelize-permissions` adds permissions to your models. Plays nice with `sequalize-hierarchy`.
 
 ```
 Project.hasPermissionsFor(User, { 
-    groupedAs: Team, // Users can now inherit Teams permissions - requires Team.hasPermissionsFor(User) & Project.hasPermissionsFor(Team) relationships
+    groupedAs: Team, // Users can now inherit Teams permissions - requires Team.hasPermissionsFor(User) & Project.hasPermissionsFor(Team) relationships (temporarily removed in 0.0.8)
     ancestors: [Project], // Who can I inherit my permissions from?
     heirs: [Project, Task], // Who's permissions rely on me?
     defaultPermissionLevel: 1, // Defaults to 0

@@ -25,7 +25,8 @@ var TestSetup = Generator.generate(function TestSetup() {
         User: sequelize.define('users', {}),
         Project: sequelize.define('projects', {}, { hierarchy: true }),
         Task: sequelize.define('tasks', {}, { hierarchy: true }),
-        Team: sequelize.define('teams', {})
+        Team: sequelize.define('teams', {}),
+        Activity: sequelize.define('activities', {})
     });
 
     _.DB.resetTestDB = function(done) {
@@ -38,11 +39,13 @@ var TestSetup = Generator.generate(function TestSetup() {
 
     _.Project.belongsTo(_.Org);
     _.Task.belongsTo(_.Project);
+    _.Activity.belongsTo(_.Task);
+    _.Activity.belongsTo(_.Project);
 
     _.Project.hasPermissionsFor(_.User, {
         groupedAs: _.Team,
         ancestors: [_.Org, _.Project],
-        heirs: [_.Project, _.Task],
+        heirs: [_.Project, _.Task, _.Activity],
         permissionLevels: {
             10: 'view',
             30: 'write',
@@ -52,7 +55,7 @@ var TestSetup = Generator.generate(function TestSetup() {
 
     _.Project.hasPermissionsFor(_.Team, {
         ancestors: [_.Org, _.Project],
-        heirs: [_.Project, _.Task],
+        heirs: [_.Project, _.Task, _.Activity],
         permissionLevels: {
             10: 'view',
             30: 'write',
