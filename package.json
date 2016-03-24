@@ -1,6 +1,6 @@
 {
   "name": "sequelize-permissions",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "`sequelize-permissions` adds permissions to your models. If your models use `sequalize-hierarchy`, you can set how their permissions inherit.",
   "main": "index.js",
   "scripts": {
