@@ -15,12 +15,19 @@ module.exports = function(Sequelize) {
             options.heirs     = options.heirs     || [];
             options.sequelize = sequelize;
             options.Sequelize = Sequelize;
-            options.User      = User;
             options.Models    = options.ancestors.concat([this]).concat(options.heirs).filter(uniq);
 
             for (var i = options.Models.length - 1; i >= 0; i--) {
+                options.User  = User;
                 options.Model = options.Models[i];
                 sequelize.Permissions.registerPermitter(options);
+
+                if (options.groupedAs) {
+                    options.User = options.groupedAs;
+                    options.groupedAs = null;
+                    sequelize.Permissions.registerPermitter(options);
+                    options.groupedAs = options.User;
+                }
             }
         }
     });

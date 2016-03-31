@@ -14,6 +14,7 @@ var TestSetup = Generator.generate(function TestSetup() {
         dialect: 'sqlite',
         storage: './tmp.sqlite',
         logging: false,
+        // logging: console.log,
         retry: {
             max: 3
         }
